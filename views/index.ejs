@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+  <script src="http://localhost:3000/socket.io/socket.io.js"></script>
   <script src="js.js"></script>
   <title>L</title>
   <style>
@@ -41,9 +42,10 @@
 			Ax:<input id="lookat_ax" type="number" value=0 />
 			Ay:<input id="lookat_ay" type="number" value=0 /><br/>
 			<button id="lookat_destroy">Kill</button>
-			<button onclick="hero.phis=Interface.looking_el?Interface.looking_el:hero.phis;hero.phis.dyn=true;hero.phis.max_v=hero.phis.max_v>0?hero.phis.max_v:20;">Управлять</button>
+			<button onclick="hero.phis=Interface.looking_el?Interface.looking_el:hero.phis;hero.phis.dyn=true;hero.phis.max_v=hero.phis.max_v>0?hero.phis.max_v:20;">РЈРїСЂР°РІР»СЏС‚СЊ</button>
 		</span>
   <button id="look_but" onclick="Interface.create();">Generate</button>
+  <button id="socket">Socket</button>
 
   <p style="display:none;">Size:<input type="number" value="50" min="1" id="Brushadow2_size" onchange="Brushadow2.size=this.value;"/>
     <input type="color" id="Brushadow2_color" value="#ff9900" onchange="Brushadow2.color=this.value;"/>
@@ -66,7 +68,7 @@
   <hr class="clearfix"/>
 
   <textarea id="save_editor" onfocus="this.value=this.value?this.value:localStorage.save;">dyn:false,w:2,h:150,x:500,y:80,ax:0,ay:0,max_v:20,vx:0,vy:0,name:Gen2,jumpy:false,destroyable:false,destroyer:false,mind:false,color:black,|dyn:false,w:200,h:2,x:500,y:155,ax:0,ay:0,max_v:20,vx:0,vy:0,name:Gen3,jumpy:false,destroyable:false,destroyer:false,mind:false,color:#110b00,|dyn:false,w:300,h:2,x:500,y:200,ax:0,ay:0,max_v:20,vx:20,vy:0,name:Gen4,jumpy:false,destroyable:false,destroyer:false,mind:false,color:#000000,|dyn:false,w:40,h:40,x:330,y:103,ax:0,ay:0,max_v:0,vx:20,vy:2.016,name:Stat jumpy,jumpy:true,destroyable:false,destroyer:false,mind:false,color:#ff0d0d,|dyn:false,w:2,h:500,x:2,y:250,ax:0,ay:0,max_v:0,vx:0,vy:0,name:stop-l,jumpy:true,destroyable:false,destroyer:false,mind:false,color:black,|dyn:false,w:800,h:2,x:400,y:2,ax:0,ay:0,max_v:0,vx:0,vy:0,name:stop-r,jumpy:true,destroyable:false,destroyer:false,mind:false,color:black,|dyn:false,w:100,h:2,x:400,y:85,ax:0,ay:0,max_v:20,vx:0,vy:0,name:Gen,jumpy:false,destroyable:false,destroyer:false,mind:false,color:#000000,|dyn:false,w:800,h:2,x:400,y:500,ax:0,ay:0,max_v:0,vx:1203.3312378153541,vy:17.877213457909498,name:Copy Gen4,jumpy:true,destroyable:false,destroyer:false,mind:false,color:#000000,|dyn:false,w:2,h:500,x:800,y:250,ax:0,ay:0,max_v:0,vx:0,vy:0,name:Copy Copy Gen4,jumpy:true,destroyable:false,destroyer:false,mind:false,color:#000000,|dyn:false,w:2,h:205,x:60,y:106,ax:0,ay:0,max_v:0,vx:0,vy:0,name:Copy Stat jumpy,jumpy:true,destroyable:false,destroyer:false,mind:false,color:#000000,|dyn:false,w:120,h:2,x:63,y:250,ax:0,ay:0,max_v:0,vx:2470.352585720922,vy:9664.299679497646,name:Stat jumppy,jumpy:true,destroyable:false,destroyer:false,mind:false,color:#000000,|dyn:false,w:100,h:2,x:172,y:298,ax:0,ay:0,max_v:0,vx:193.75971586640264,vy:-28815025829.339615,name:Copy Stat jumppy,jumpy:true,destroyable:false,destroyer:false,mind:false,color:#000000,|dyn:false,w:2,h:205,x:122,y:146,ax:0,ay:0,max_v:0,vx:-1176286.1465979456,vy:-29.242470717380048,name:Copy Copy Stat jumpy,jumpy:true,destroyable:false,destroyer:false,mind:false,color:#000000,|dyn:false,w:2,h:250,x:170,y:130,ax:0,ay:0,max_v:0,vx:11.020408163265309,vy:-52.74052478134112,name:Copy Copy Copy Stat jumpy,jumpy:true,destroyable:false,destroyer:false,mind:false,color:#000000,|dyn:false,w:2,h:250,x:221,y:172,ax:0,ay:0,max_v:20,vx:0,vy:0,name:Stat jumpy9,jumpy:true,destroyable:false,destroyer:false,mind:false,color:#000000,|dyn:false,w:2,h:160,x:265,y:120,ax:0,ay:0,max_v:0,vx:-20,vy:-4.032,name:Stat jumpy92,jumpy:true,destroyable:false,destroyer:false,mind:false,color:#000000,|dyn:false,w:120,h:2,x:439,y:42,ax:0,ay:0,max_v:0,vx:0,vy:0,name:Copy Gen,jumpy:false,destroyable:false,destroyer:false,mind:false,color:#000000,|dyn:true,w:1,h:1,x:0.5,y:243,ax:0,ay:0,max_v:60,vx:0,vy:0,name:bullet,jumpy:false,destroyable:false,destroyer:false,mind:false,color:#ff0000,|dyn:true,w:2,h:160,x:265,y:764,ax:0,ay:0,max_v:20,vx:0,vy:-5e-324,name:Stat jumpy927,jumpy:true,destroyable:false,destroyer:false,mind:false,color:#000000,|dyn:false,w:2,h:160,x:121,y:379,ax:0,ay:0,max_v:20,vx:-2849615.2334462334,vy:-105,name:Stat jumpy9278,jumpy:true,destroyable:false,destroyer:false,mind:false,color:#000000,|dyn:false,w:2,h:160,x:231,y:419,ax:0,ay:0,max_v:20,vx:896345188108714,vy:44.26229508196722,name:Stat jumpy928,jumpy:true,destroyable:false,destroyer:false,mind:false,color:#000000,|dyn:false,w:2,h:160,x:266,y:324,ax:0,ay:0,max_v:20,vx:0,vy:0,name:Stat jumpy926,jumpy:false,destroyable:false,destroyer:false,mind:false,color:#000000,|dyn:false,w:120,h:2,x:62,y:298,ax:0,ay:0,max_v:20,vx:-13,vy:145.51683918938625,name:Gen93,jumpy:true,destroyable:false,destroyer:false,mind:false,color:#b6f8ef,|dyn:false,w:80,h:2,x:190,y:396,ax:0,ay:0,max_v:20,vx:-20,vy:1,name:Gen935,jumpy:false,destroyable:false,destroyer:false,mind:false,color:#000000,|dyn:false,w:120,h:2,x:325,y:243,ax:0,ay:0,max_v:20,vx:0,vy:0,name:Copy Gen3,jumpy:false,destroyable:false,destroyer:false,mind:false,color:#000000,|</textarea>
-  <button onclick="save();">Сохранить</button>
+  <button onclick="save();">РЎРѕС…СЂР°РЅРёС‚СЊ</button>
   <button onclick="save('t');">Save from textarea</button>
   <button onclick="Uni.save('g');">Make save to textarea</button>
   <button onclick="Uni.load(document.getElementById('save_editor').value);">Load from textarea</button>
@@ -80,32 +82,32 @@
 
 <div id="phisblock">
   Universe:<br/>
-  <!--	Замыкание <input type="checkbox" checked onclick="Phisical.uround=this.checked;" /><br/>
-          Вакуум <input type="checkbox" checked onclick="Phisical.stop=!this.checked;" /><br/>
-  -->		Имена <input type="checkbox" checked onclick="Graphic.shownames=this.checked;" /><br/>
-  Gравитация <input type="number" onchange="Phisical.gravity=this.value;" value="0" /><br/>
-  Сопрот. воздуха <input type="number" onchange="Phisical.vyaz=this.value/100;" value="50" /><br/>
+  <!--	Р—Р°РјС‹РєР°РЅРёРµ <input type="checkbox" checked onclick="Phisical.uround=this.checked;" /><br/>
+          Р’Р°РєСѓСѓРј <input type="checkbox" checked onclick="Phisical.stop=!this.checked;" /><br/>
+  -->		РРјРµРЅР° <input type="checkbox" checked onclick="Graphic.shownames=this.checked;" /><br/>
+  GСЂР°РІРёС‚Р°С†РёСЏ <input type="number" onchange="Phisical.gravity=this.value;" value="0" /><br/>
+  РЎРѕРїСЂРѕС‚. РІРѕР·РґСѓС…Р° <input type="number" onchange="Phisical.vyaz=this.value/100;" value="50" /><br/>
   dt:<input type="number" value="2" onchange="Phisical.Ctime=1000/this.value;" /><br/>
   <hr/>
   Hero:<br/>
-  Фраги:<span id="frag"></span><br/>
-  Скорость: <input type="number" onchange="hero.phis.max_v=this.value;" value="120" /><br/>
-  Мощность: <input type="number" onchange="hero.a=parseInt(this.value);" value="7" /><br/>
-  <button onclick="hero.reset();">Верни героя!</button><br/>
+  Р¤СЂР°РіРё:<span id="frag"></span><br/>
+  РЎРєРѕСЂРѕСЃС‚СЊ: <input type="number" onchange="hero.phis.max_v=this.value;" value="120" /><br/>
+  РњРѕС‰РЅРѕСЃС‚СЊ: <input type="number" onchange="hero.a=parseInt(this.value);" value="7" /><br/>
+  <button onclick="hero.reset();">Р’РµСЂРЅРё РіРµСЂРѕСЏ!</button><br/>
   <hr class="clearfix"/>
-  Мне скучно:<input type="checkbox" onclick="ship_attack();" /><br/>
-  Погоня:<input type="checkbox" onclick="AI.brrrr=this.checked;document.getElementById('afraid').disabled=!this.checked;" /><br/>
-  Страх:<input disabled type="checkbox" id="afraid" onclick="AI.brside=(this.checked)?-1:1;" /><br/>
+  РњРЅРµ СЃРєСѓС‡РЅРѕ:<input type="checkbox" onclick="ship_attack();" /><br/>
+  РџРѕРіРѕРЅСЏ:<input type="checkbox" onclick="AI.brrrr=this.checked;document.getElementById('afraid').disabled=!this.checked;" /><br/>
+  РЎС‚СЂР°С…:<input disabled type="checkbox" id="afraid" onclick="AI.brside=(this.checked)?-1:1;" /><br/>
 
   <hr/>
-  Кнопки:<br/>
-  WASD,стрелки - движение<br/>
-  пробел - тормоз<br/>
+  РљРЅРѕРїРєРё:<br/>
+  WASD,СЃС‚СЂРµР»РєРё - РґРІРёР¶РµРЅРёРµ<br/>
+  РїСЂРѕР±РµР» - С‚РѕСЂРјРѕР·<br/>
   P - Pause<br/>
-  G - снять с паузы<br/>
-  F - отрисовать кадр<br/>
-  E - выстрел<br/>
-  ctrl+z - вернуть где было<br/>
+  G - СЃРЅСЏС‚СЊ СЃ РїР°СѓР·С‹<br/>
+  F - РѕС‚СЂРёСЃРѕРІР°С‚СЊ РєР°РґСЂ<br/>
+  E - РІС‹СЃС‚СЂРµР»<br/>
+  ctrl+z - РІРµСЂРЅСѓС‚СЊ РіРґРµ Р±С‹Р»Рѕ<br/>
 </div>
 </body>
 </html>
