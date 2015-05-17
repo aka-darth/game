@@ -1,18 +1,16 @@
 #!/usr/bin/env node
-var debug = require('debug')('game:server');
-var io = require('socket.io');
+var host="192.168.1.26";
+
+//var io = require('socket.io');
 var http = require('http');
-
-
+var socket = require('./websocket/');
 var express = require('express');
 var path = require('path');
-var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
 
 var app = express();
 
@@ -28,8 +26,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+/*
+app.use('/', function(req,res,next){
+  console.log(req.headers);
+  res.end('Hello');
+});
+*/
+
 app.use('/', routes);
-app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -62,45 +66,18 @@ app.use(function(err, req, res, next) {
   });
 });
 
-
-var port = normalizePort(process.env.PORT || '3000');
+var port = '80';//normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 
+
+
 var server = http.createServer(app);
-var io=io.listen(server);
-//Socket)
-/**
- * gfdgdgdgd
- */
-io.sockets.on('connection', function(socket){
-  console.log('Connection:', socket);
-  var ID = (socket.id).toString().substr(0, 5);
-  var time = (new Date).toLocaleTimeString();
-
-  socket.send('hi');
-  socket.json.send({'event': 'connected', 'name': ID, 'time': time});
-
-  socket.on('message', function (data) {
-    console.log(data);
-  });
-  socket.on('event', function(data){
-    console.log(data);
-  });
-  socket.on('disconnect', function(){
-    console.log('disconnect');
-  })
-  socket.emit('ready','test 2'); // работает
-  socket.broadcast.emit('ready','test 3');// работает
-
-});
-
-io.sockets.emit("ready",'test 1'); // не работает
-
-
-server.listen(port);
+socket.init(server);
+server.listen(port,host);
 server.on('error', onError);
 server.on('listening', onListening);
+
 
 
 function normalizePort(val) {
@@ -142,9 +119,5 @@ function onError(error) {
   }
 }
 function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
-      ? 'pipe ' + addr
-      : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+  console.log('Listening on ', server.address());
 }

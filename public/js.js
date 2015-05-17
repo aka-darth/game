@@ -41,36 +41,55 @@ nextshot=0;
  rotate!!
  */
 
-Socket = {
-
-}
-
+var socket;
 
 function after_load(){
-    //Interface.look_at(get('Gen1'));
+    //Interface.look_at(get('Gen1'))    ;
 //	Phisical.collect=[];
     //get('Stat jumpy5').clever=true;
     if(Graphic.paused)Graphic.anyway=true;//Один кадр то отрисовать надо
 
-    Socket = socket = io.connect('ws://localhoct:3000/', {'transports': ['xhr-polling']});
-    socket.on('connect', function () {
-        socket.send('ololo hello hello');
-        socket.on('message', function (msg) {
-            console.log(msg);
-        });
-    });
-    document.querySelector('#socket').onclick=function(){
-        console.log(1);
-        socket.send('ololo hello hello');
+    socket = new WebSocket('ws://192.168.1.26');
+    socket.onopen = function () {
+        socket.send('{"ping":"hello from the client"}');
     };
-    socket.send('ololo hello hello');
-    socket.emit('message',{data:'ololo hello hello'});
-    socket.on('ready', function(data)
-    {
-        console.log('ready:'+data);
-    });
-    console.log(socket);
+    socket.onmessage = function (message) {
+        console.log('Socket:',message.data);
+        var key=JSON.parse(message.data).key;
 
+        if(key){
+            switch(parseInt(key)){
+                case 87:case 38://W
+                    hero.phis.vy-=hero.a;
+                break;
+                case 68:case 39://D
+                    hero.phis.vx+=hero.a;
+                break;
+                case 65:case 37://A
+                    hero.phis.vx=hero.phis.vx-hero.a;
+                break;
+                case 83:case 40://S
+                    hero.phis.vy+=hero.a;
+                break;
+                case 32:
+                    hero.phis.ax=0;
+                    hero.phis.ay=0;
+                    hero.phis.vx=Math.round(hero.phis.vx/2);
+                    hero.phis.vy=Math.round(hero.phis.vy/2);
+                    break;
+                default:
+                    console.log('Recieved unknown key ',key);
+            }
+        }
+    };
+    socket.onerror = function (error) {
+        console.log('WebSocket error: ' + error);
+    };
+    socket.chat=function(data){
+      socket.send('{"chat":"'+data+'"}');
+        return true;
+    };
+    console.log(socket);
 }
 function save(flag){//Это надо запихнуть в один из объектов
     if(flag=='t'){
@@ -898,18 +917,23 @@ window.onload=function(){
             this.keys.forEach(function(item){
                 switch(item){
                     case 87:case 38://W
-                    hero.phis.vy-=hero.a;
+                        socket.send('{"key":"'+item+'"}');
+                        hero.phis.vy-=hero.a;
                     break;
                     case 68:case 39://D
-                    hero.phis.vx+=hero.a;
+                        socket.send('{"key":"'+item+'"}');
+                        hero.phis.vx+=hero.a;
                     break;
                     case 65:case 37://A
-                    hero.phis.vx=hero.phis.vx-hero.a;
+                        socket.send('{"key":"'+item+'"}');
+                        hero.phis.vx=hero.phis.vx-hero.a;
                     break;
                     case 83:case 40://S
-                    hero.phis.vy+=hero.a;
+                        socket.send('{"key":"'+item+'"}');
+                        hero.phis.vy+=hero.a;
                     break;
                     case 32:
+                        socket.send('{"key":"'+item+'"}');
                         hero.phis.ax=0;
                         hero.phis.ay=0;
                         hero.phis.vx=Math.round(hero.phis.vx/2);
