@@ -50,32 +50,51 @@ function after_load(){
     if(Graphic.paused)Graphic.anyway=true;//Один кадр то отрисовать надо
 
     socket = new WebSocket('ws://192.168.1.26');
+    socket.heros=[];
+
     socket.onopen = function () {
-        socket.send('{"ping":"hello from the client"}');
+        socket.send('{"hero":'+JSON.stringify(hero)+'}');
+    };
+    socket.sendkey=function(key){
+        socket.send('{"id":"'+socket.myid+'","key":"'+key+'"}');
     };
     socket.onmessage = function (message) {
-        console.log('Socket:',message.data);
-        var key=JSON.parse(message.data).key;
-
-        if(key){
-            switch(parseInt(key)){
+        var data = JSON.parse(message.data);
+        console.log('Socket:',data);
+        if(data.status){
+            socket.myid=data.id;
+        }
+        if(data.hero){
+            socket.heros[data.id]=data.hero;
+            socket.heros[data.id].name='hero '+data.id;
+            socket.heros[data.id].phis.name='hero'+data.id;
+            socket.heros[data.id].phis=Phisical.create(socket.heros[data.id].phis);
+            console.log('New hero!',data.id,socket.heros[data.id]);
+        }
+        if(data.hero_request){
+            socket.send('{"hero_reply":'+JSON.stringify(hero)+',"id":"'+socket.myid+'","to":"'+data.to+'"}');
+        }
+        if(data.key){
+            var r_hero=socket.heros[data.id];
+            console.log(hero);
+            switch(parseInt(data.key)){
                 case 87:case 38://W
-                    hero.phis.vy-=hero.a;
+                    r_hero.phis.vy-=hero.a;
                 break;
                 case 68:case 39://D
-                    hero.phis.vx+=hero.a;
+                    r_hero.phis.vx+=hero.a;
                 break;
                 case 65:case 37://A
-                    hero.phis.vx=hero.phis.vx-hero.a;
+                    r_hero.phis.vx=hero.phis.vx-hero.a;
                 break;
                 case 83:case 40://S
-                    hero.phis.vy+=hero.a;
+                    r_hero.phis.vy+=hero.a;
                 break;
                 case 32:
-                    hero.phis.ax=0;
-                    hero.phis.ay=0;
-                    hero.phis.vx=Math.round(hero.phis.vx/2);
-                    hero.phis.vy=Math.round(hero.phis.vy/2);
+                    r_hero.phis.ax=0;
+                    r_hero.phis.ay=0;
+                    r_hero.phis.vx=Math.round(hero.phis.vx/2);
+                    r_hero.phis.vy=Math.round(hero.phis.vy/2);
                     break;
                 default:
                     console.log('Recieved unknown key ',key);
@@ -917,23 +936,23 @@ window.onload=function(){
             this.keys.forEach(function(item){
                 switch(item){
                     case 87:case 38://W
-                        socket.send('{"key":"'+item+'"}');
+                        socket.sendkey(item);
                         hero.phis.vy-=hero.a;
                     break;
                     case 68:case 39://D
-                        socket.send('{"key":"'+item+'"}');
+                        socket.sendkey(item);
                         hero.phis.vx+=hero.a;
                     break;
                     case 65:case 37://A
-                        socket.send('{"key":"'+item+'"}');
+                        socket.sendkey(item);
                         hero.phis.vx=hero.phis.vx-hero.a;
                     break;
                     case 83:case 40://S
-                        socket.send('{"key":"'+item+'"}');
+                        socket.sendkey(item);
                         hero.phis.vy+=hero.a;
                     break;
                     case 32:
-                        socket.send('{"key":"'+item+'"}');
+                        socket.sendkey(item);
                         hero.phis.ax=0;
                         hero.phis.ay=0;
                         hero.phis.vx=Math.round(hero.phis.vx/2);
