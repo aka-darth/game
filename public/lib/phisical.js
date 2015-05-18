@@ -2,7 +2,7 @@ Phisical={//Физика
     stop:false,//Это вакуум
     gravity:0,//
     uround:true,//Замыкание вселенной
-    vyaz:0.5,//Вязкость воздуха
+    vyaz:0.2,//Вязкость воздуха
     Ctime:500,//Коэффицент перевода милисекунд в физическое время мира
     collect:new Array(),//Здесь лежат все физические объекты
     recalculate:function(dt){//Пересчет всех характеристик
@@ -64,7 +64,61 @@ Phisical={//Физика
         }
         Interface.look();
     },
-    is_empty_place:function(x,y,w,h){//Пусто ли свято место?
+    sync:function(target,dt){
+        if(this.gravity){
+            target.ay=this.gravity;//(target.ay<this.gravity)?target.ay+(this.gravity/2):target.ay;
+        }
+        if(this.stop){
+            target.vx=Math.ceil(target.vx + (target.vx*this.vyaz - target.ax)*dt/this.Ctime);
+            target.vy=Math.ceil(target.vy + (target.ay)*dt/this.Ctime);
+        }else{
+            target.vx=target.vx+target.ax*(dt/this.Ctime);
+            target.vy=target.vy+target.ay*(dt/this.Ctime);
+        }
+        //Ограничитель скорости
+        if(Math.abs(target.vx)>target.max_v){
+            target.vx=(target.vx>0)?(target.max_v):(-target.max_v);
+        }
+        if(Math.abs(target.vy)>target.max_v){
+            target.vy=(target.vy>0)?(target.max_v):(-target.max_v);
+        }
+        //Перерасчет координат..
+        var next={
+            ox:target.x,
+            oy:target.y,
+            x:Math.round(target.x+target.vx*(dt/this.Ctime)),
+            y:Math.round(target.y+target.vy*(dt/this.Ctime)),
+            w:target.w,
+            h:target.h
+        }
+
+        //Вылет за край карты..
+        if(Phisical.uround){
+            if(next.y>Graphic.canvas.height){next.y-=Graphic.canvas.height;next.oy=0;}
+            if(next.x>Graphic.canvas.width){next.x-=Graphic.canvas.width;next.ox=0;}
+            if(next.y<0){next.y=Graphic.canvas.height-next.y;next.oy=Graphic.canvas.height;}
+            if(next.x<0){next.x=Graphic.canvas.width-next.x;next.ox=Graphic.canvas.width;}
+        }else{
+            if((next.y>Graphic.canvas.height || next.x>Graphic.canvas.width || next.y<0 || next.x<0) && target.name!='hero' && !target.mind){
+                Phisical.destroy(target.name);//Нах он нужен,коли улетел..
+            }
+
+        }
+
+        //Столкновения?
+        next=this.findCollision(next,Phisical.collect.length-1);
+        target.x=next.x;
+        target.y=next.y;
+        //Перерасчет в случае столкновения
+        if(next.collision.x || next.collision.y){
+            Phisical.do_collision(next.collision,target);
+        }
+        console.log(target);
+
+    },
+    is_empty_place:function(x,y,w,h){
+    //Пусто ли свято место?
+
 //			Animations.pp.clearRect(x,y,w,h);
         Animations.pp.fillStyle='rgba(0,0,0,0.1)';
         Animations.pp.fillRect(x,y,w,h);
@@ -250,11 +304,13 @@ Phisical={//Физика
             default:
         }
     },
-    create:function(data){//создать физический объект
+    create:function(data,timestamp){//создать физический объект
         var name=data.name;
+        //Short war with doubles
         while(get(name)){
             name=name+Math.ceil(Math.random()*10);
         }
+
         var new_o={
             dyn:data.dyn||false,
             w:data.w||1,
@@ -285,6 +341,12 @@ Phisical={//Физика
             new_o.color=data.color||false;
         }
         //new_o.oncollision=data.oncollision||function(){return false;};
+        if(timestamp){
+            var dt=Graphic.shots_time[Graphic.shots_time.length-1]-timestamp;
+            console.log('Sync dt',dt,Date.now()-timestamp);
+
+//            Phisical.sync(new_o,timestamp);
+        }
         this.collect.push(new_o);
         return new_o;
     },

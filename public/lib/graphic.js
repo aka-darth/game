@@ -1,6 +1,6 @@
 Graphic={//Это почти бог.
     def_color:'black',
-    paused:true,
+    paused:config.start_pause||true,
     shownames:true,
     init:function(){
         this.canvas=document.getElementById("canvas");

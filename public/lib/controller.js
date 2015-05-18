@@ -149,23 +149,23 @@ controller={//Управление
         this.keys.forEach(function(item){
             switch(item){
                 case 87:case 38://W
-                    if(Multiplayer.socket)Multiplayer.socket.sendkey(item);
+                    if(Multiplayer.socket)Multiplayer.sendkey(item);
                     hero.phis.vy-=hero.a;
                 break;
                 case 68:case 39://D
-                    if(Multiplayer.socket)Multiplayer.socket.sendkey(item);
+                    if(Multiplayer.socket)Multiplayer.sendkey(item);
                     hero.phis.vx+=hero.a;
                 break;
                 case 65:case 37://A
-                    if(Multiplayer.socket)Multiplayer.socket.sendkey(item);
+                    if(Multiplayer.socket)Multiplayer.sendkey(item);
                     hero.phis.vx=hero.phis.vx-hero.a;
                 break;
                 case 83:case 40://S
-                    if(Multiplayer.socket)Multiplayer.socket.sendkey(item);
+                    if(Multiplayer.socket)Multiplayer.sendkey(item);
                     hero.phis.vy+=hero.a;
                 break;
                 case 32:
-                    if(Multiplayer.socket)Multiplayer.socket.sendkey(item);
+                    if(Multiplayer.socket)Multiplayer.sendkey(item);
                     hero.phis.ax=0;
                     hero.phis.ay=0;
                     hero.phis.vx=Math.round(hero.phis.vx/2);

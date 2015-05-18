@@ -312,10 +312,10 @@ window.onload=function(){
     },
     hero={//Мой герой всегда со мной
         name:'hero',
-        a:7,
+        a:2,
         frag:0,
         phis:Phisical.create({
-            w:30,h:30,x:450,y:180,max:30,dyn:true,color:'#FF9900',jumpy:true,name:'hero',destroyer:true
+            w:30,h:30,x:450,y:180,max:70,dyn:true,color:'#FF9900',jumpy:true,name:'hero',destroyer:true
         }),
         reset:function(){//Ну почти всегда.. иногда надо его вернуть
             if(get(this.phis.name)){

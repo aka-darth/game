@@ -1,5 +1,6 @@
 var socket_server = require('websocket').server;
 var inc=0;
+var frame={w:800,h:400}
 var client=function(connection){
   var _this=this;
   this.id=inc++;
@@ -8,24 +9,36 @@ var client=function(connection){
     this.connection.sendUTF(data);
   };
   this.connection.on('message', function(message) {
-    var data=JSON.parse(message.utf8Data);
-    console.log('Catch mess from:',_this.id,data);
-    if(data.key){
-      socket.broadcast(message.utf8Data,_this.id);
-    }else if(data.chat){
-      socket.broadcast(message.utf8Data,_this.id);
-    }else if(data.hero){
-      data.id=_this.id;
-      socket.broadcast(JSON.stringify(data),_this.id);
-      _this.send('{"status":"request_heros","id":"'+_this.id+'"}');
-    }else if(data.hero_reply){
-      var resp={
-        hero:data.hero_reply,
-        id:data.id
-      }
-      console.log();
-      socket.get(data.to).send(JSON.stringify(resp));
+    try{
+      var data=JSON.parse(message.utf8Data);
+    }catch(e){
+      console.log('Check yor JSON',message.utf8Data);
+      return;
     }
+    switch(data.event){
+      case "chat":
+          socket.broadcast(message.utf8Data,_this.id);
+        break;
+      case "key":
+        socket.broadcast(message.utf8Data,_this.id);
+        break;
+      case "noob":
+        data.id=_this.id;
+        socket.broadcast(JSON.stringify(data),_this.id);
+        _this.send('{"event":"init","id":"'+_this.id+'","frame":'+JSON.stringify(frame)+'}');
+        break;
+      case "sync_resp":
+        var resp={
+          event:"noob",
+          hero:data.hero,
+          id:data.id
+        }
+        socket.get(data.to).send(JSON.stringify(resp));
+        break;
+      default:
+         console.log("Socket unknown request",data);
+    }
+
   });
   this.connection.on('close', function(connection) {
     console.log('connection closed',_this.id);
@@ -52,7 +65,7 @@ socket={
     var connection = request.accept(null, request.origin);
     var t=new client(connection);
     socket.connections.push(t);
-    socket.broadcast('{"hero_request":"true","to":"'+ t.id+'"}', t.id)
+    socket.broadcast('{"event":"sync","to":"'+ t.id+'"}', t.id)
   },
   broadcast:function(data,sender){
     console.log('Try broadcast to',this.connections.length,'from',sender);
