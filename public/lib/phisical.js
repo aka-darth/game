@@ -358,5 +358,12 @@ Phisical={//Физика
             }
         }
         return false;
+    },
+    get:function(name){
+        var model=false;
+        this.collect.forEach(function(el){
+            if(el.name==name)model=el;
+        });
+        return model;
     }
 }

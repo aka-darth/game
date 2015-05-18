@@ -17,10 +17,9 @@ var client=function(connection){
     }
     switch(data.event){
       case "chat":
-          socket.broadcast(message.utf8Data,_this.id);
-        break;
       case "key":
-        socket.broadcast(message.utf8Data,_this.id);
+      case "sync":
+         socket.broadcast(message.utf8Data,_this.id);
         break;
       case "noob":
         data.id=_this.id;
@@ -65,17 +64,11 @@ socket={
     var connection = request.accept(null, request.origin);
     var t=new client(connection);
     socket.connections.push(t);
-    socket.broadcast('{"event":"sync","to":"'+ t.id+'"}', t.id)
+    socket.broadcast('{"event":"sync_req","to":"'+ t.id+'"}', t.id)
   },
   broadcast:function(data,sender){
-    console.log('Try broadcast to',this.connections.length,'from',sender);
     this.connections.forEach(function(client){
-      if(client.id!=sender){
-        console.log('Sending ',data,'to',client.id);
-        client.send(data);
-      }else{
-        console.log('Client',client.id,'is sender');
-      }
+      if(client.id!=sender)client.send(data);
     });
   }
 }

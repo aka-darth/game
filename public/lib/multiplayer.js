@@ -4,6 +4,7 @@ Multiplayer={
     heros:[],
     init:function(){
         //Return
+        Graphic.paused=false;
         if(this.socket)return;
         var socket = new WebSocket('ws://192.168.1.26');
         socket.onopen = function(){
@@ -13,7 +14,7 @@ Multiplayer={
         socket.onmessage = function (message) {
             try{
                 var data = JSON.parse(message.data);
-                console.log('Server say:',data);
+//                console.log('Server say:',data);
             }catch(e){
                 console.log('Check your JSON:\n==================\n',message,'\n=================\n');
             }
@@ -23,6 +24,7 @@ Multiplayer={
             console.log('WebSocket error: ' + error);
         };
         this.socket=socket;
+        st:setInterval(function(){Multiplayer.socket.send('{"event":"sync","hero":'+JSON.stringify(hero)+',"id":"'+Multiplayer.id+'"}');},config.syncinterval||1000)
     },
     sendkey:function(key){
         this.socket.send('{"event":"key","id":"'+Multiplayer.id+'","key":"'+key+'"}');
@@ -77,8 +79,15 @@ Multiplayer={
                 Multiplayer.heros[data.id].phis=Phisical.create(Multiplayer.heros[data.id].phis,data.stamp);
                 console.log('New hero!',data.id,Multiplayer.heros[data.id]);
                 break;
-            case "sync":
+            case "sync_req":
                 Multiplayer.socket.send('{"event":"sync_resp","hero":'+JSON.stringify(hero)+',"id":"'+Multiplayer.id+'","to":"'+data.to+'"}');
+                break;
+            case "sync":
+                console.log(data.hero.phis);
+                var model=Phisical.get('hero'+data.id);
+                for(var key in model){
+                    if(key!="name")model[key]=(typeof data.hero.phis[key]=="undefined")?data.hero.phis[key]:model[key];
+                }
                 break;
             default:
                 console.log("Socket unknown request",data);
