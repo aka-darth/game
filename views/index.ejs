@@ -1,6 +1,12 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+  <script src="lib/interface.js"></script>
+  <script src="lib/graphic.js"></script>
+  <script src="lib/controller.js"></script>
+  <script src="lib/AI.js"></script>
+  <script src="lib/phisical.js"></script>
+  <script src="lib/multiplayer.js"></script>
   <script src="js.js"></script>
   <title>L</title>
   <style>
@@ -44,7 +50,7 @@
 			<button onclick="hero.phis=Interface.looking_el?Interface.looking_el:hero.phis;hero.phis.dyn=true;hero.phis.max_v=hero.phis.max_v>0?hero.phis.max_v:20;">Управлять</button>
 		</span>
   <button id="look_but" onclick="Interface.create();">Generate</button>
-  <button id="socket">Socket</button>
+  <button id="socket" onclick="Multiplayer.init()">Socket</button>
 
   <p style="display:none;">Size:<input type="number" value="50" min="1" id="Brushadow2_size" onchange="Brushadow2.size=this.value;"/>
     <input type="color" id="Brushadow2_color" value="#ff9900" onchange="Brushadow2.color=this.value;"/>
