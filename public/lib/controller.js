@@ -105,6 +105,7 @@ controller={//Управление
                     if(Graphic.paused)Graphic.anyway=true;
                     break;
                 case 69://E Выстрел
+                    if(Multiplayer.socket)Multiplayer.sendkey(e.which);
                     Phisical.create({
                         name:'bullet',
                         bulletof:'hero',

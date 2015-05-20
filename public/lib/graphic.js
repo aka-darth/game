@@ -1,4 +1,5 @@
-Graphic={//Это почти бог.
+//Это почти бог.
+Graphic={
     def_color:'black',
     paused:config.start_pause||true,
     shownames:true,
@@ -19,16 +20,18 @@ Graphic={//Это почти бог.
         after_load();
     },
     //MAIN LOOP
-    shot:function(time){//Отрисовка кадра. Выполнения этой функции - это удары сердца игры.
+    //Отрисовка кадра. Выполнения этой функции - это удары сердца игры.
+    shot:function(time){
         Graphic.shots_time.push( 1000/(time-Graphic.prevtime) );
-        if(Graphic.shots_time.length>24){
+        if(Graphic.shots_time.length>24){//Храним 24 кадра для того,чтоб цифра фпс сильно не прыгала
             Graphic.shots_time.splice(0,1);
         }
         if(!Graphic.paused || Graphic.anyway){
             Graphic.anyway=false;
+
+            //Shot-функции
             AI.step(time);
             Phisical.recalculate(time-Graphic.prevtime);
-
             Animations.shot(time);
 
             var Spf=Graphic.shots_time.reduce(function(prev, curr){
@@ -39,7 +42,6 @@ Graphic={//Это почти бог.
 
             var E=0;
             Phisical.collect.forEach(function(item,key,array){
-
                 if(item.casual){
                     Graphic.pp.putImageData(item.casual,item.x-item.w/2,item.y-item.h/2);
                 }else if(item.image){
@@ -58,9 +60,7 @@ Graphic={//Это почти бог.
 
                 var g=(item.w*item.h)*(item.vx*item.vx+item.vy*item.vy)/2;
                 E=isNaN(g)?E:(E+g);
-
             });
-
 
             //Отрисовка
             Graphic.pp.fillText('FPS:'+Math.round(Spf/Graphic.shots_time.length),10,11);

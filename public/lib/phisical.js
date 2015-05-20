@@ -1,11 +1,15 @@
-Phisical={//Физика
+//Физика
+Phisical={
     stop:false,//Это вакуум
     gravity:0,//
     uround:true,//Замыкание вселенной
     vyaz:0.2,//Вязкость воздуха
     Ctime:500,//Коэффицент перевода милисекунд в физическое время мира
-    collect:new Array(),//Здесь лежат все физические объекты
-    recalculate:function(dt){//Пересчет всех характеристик
+    collect:new Array(),//Здесь лежат все физические модели
+    /*Пересчитывает физические параметры для каждого кадра
+    * @param time время,прошедшее с прошлого кадра
+    */
+    recalculate:function(dt){
         controller.move();//Пора и о юзере вспомнить. Что он там поделывает?
         for(var i=0;i<this.collect.length;i++){
             if(this.collect[i].dyn){
@@ -64,6 +68,9 @@ Phisical={//Физика
         }
         Interface.look();
     },
+    /*
+    * Скорее всего,это просто мусор.
+    */
     sync:function(target,dt){
         if(this.gravity){
             target.ay=this.gravity;//(target.ay<this.gravity)?target.ay+(this.gravity/2):target.ay;
@@ -116,12 +123,17 @@ Phisical={//Физика
         console.log(target);
 
     },
+    //Проверяет,есть ли в полученной области какие-либо физические объекты
+    //@param параметры области x,y,ширина,высота
+    //@return false || первый найденный объект
+    //TODO: добавить флаг на входе,в случае наличия которого надо вернуть все объекты из области и переименовать функцию
     is_empty_place:function(x,y,w,h){
-    //Пусто ли свято место?
 
 //			Animations.pp.clearRect(x,y,w,h);
+
         Animations.pp.fillStyle='rgba(0,0,0,0.1)';
         Animations.pp.fillRect(x,y,w,h);
+
         w=Math.abs(w)||0;
         h=Math.abs(h)||0;
         for(var key in this.collect){
@@ -132,10 +144,19 @@ Phisical={//Физика
         }
         return false;
     },
-    findCollision:function(ball,target){//Проверка столкновения
+    //Проверка столкновения
+    //@param object движущийся объект из collect,расширенный {ox,oy} - координатами предыдущего положения
+    //@param int ключ другого объекта из массива collect
+    //@return {
+    //  x:,
+    //  y: координаты следующего положения,
+    //  collision: false столкновений не найдено
+    //             {x или y:true} по какой оси найденное столкновение
+    // }
+    findCollision:function(ball,target){
         var x=ball.x;
         var y=ball.y;
-        var collision={};
+        var collision=false;
         for(var i=0;i<this.collect.length;i++){
             if(i!=target){//then try to find collisions...
                 var goal=this.collect[i];
@@ -176,15 +197,18 @@ Phisical={//Физика
 
             }
         }
-        return {x:x,y:y,collision:false};
+        return {x:x,y:y,collision:collision};
     },
-    do_collision:function(collision,ball){//Если предыдущий метод нашел столкновение
+
+    //Если предыдущий метод нашел столкновение
+    do_collision:function(collision,ball){
         console.log('Collision!'+ball.name+' -> '+collision.goal.name);
         //ball.oncollision();
         //collision.goal.oncollision();
         if(ball.destroyable && collision.goal.destroyer){
             if(collision.goal.destroyable && ball.destroyer){
                 Phisical.destroy(collision.goal.name);
+                Phisical.destroy(ball.name);
                 console.log('doublekill!');
             }
             Animations.create({

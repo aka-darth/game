@@ -1,24 +1,24 @@
 nextshot=0;
 /* TODO:
+ Физику перенести на свою систему координат, отличную от пикселей, добавить методы перерасчета в пиксели.
+ Пролистывание карты для незацикленных вселенных
+
+
  Fix:
- rounding! Only x&y must be rounded.
- atmosphere...fuck.
+Физика: округлятся должны только x и y! Избавить скорости и ускорения от всех округлений.
+        вязкость воздуха - ужасна.переписать
 
  ? create presets (objects,animations)
+    создать пресеты объектов по типам (стены,пули)
 
  saves:
+ Надо избавиться от сохранения дефолтных настроек чтоб облегчить файл, т.к. они при загрузке по дефолту установятся. И в этом должны помочь пресеты
  fix img saves (need another separator)
  save uni settings
- dont save default values
-
-
-
- metric system,convert to pixels
 
  +Static layer ->
  +Animations (loop/one time) ->
- spf нахуй
- clone image fix
+ clone image fix ???
 
 
  Phisical lookaround method
@@ -31,15 +31,16 @@ nextshot=0;
  radius destroy
  master of bullets
 
- map listing for uround uni
+
 
  Server-side ->
  Multiply saves,download&upload saves
- multiplayer (if its real)
+ multiplayer (if its real) //I DO IT!
  Screenshot?
  custom elements: imageData convert to png
- rotate!!
  */
+
+//Временные функции. Не использовать их в модулях!
 function after_load(){
     //Interface.look_at(get('Gen1'))    ;
 //	Phisical.collect=[];
@@ -134,6 +135,7 @@ function need_repair(){
     }
 }
 
+//Точка входа
 window.onload=function(){
     Uni={
         load:function(data){
@@ -310,7 +312,9 @@ window.onload=function(){
             }
         }
     },
-    hero={//Мой герой всегда со мной
+
+    //Мой герой всегда со мной
+    hero={
         name:'hero',
         a:2,
         frag:0,

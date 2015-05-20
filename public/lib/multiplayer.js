@@ -1,3 +1,4 @@
+/* Хорошему коду комментарии не нужны */
 Multiplayer={
     socket:false,
     id:false,
@@ -24,14 +25,24 @@ Multiplayer={
             console.log('WebSocket error: ' + error);
         };
         this.socket=socket;
-        st:setInterval(function(){Multiplayer.socket.send('{"event":"sync","hero":'+JSON.stringify(hero)+',"id":"'+Multiplayer.id+'"}');},config.syncinterval||1000)
+        st:setInterval(function(){Multiplayer.socket.send('{"event":"sync","hero":'+JSON.stringify(hero)+',"id":"'+Multiplayer.id+'","time":"'+Date.now()+'"}');},config.syncinterval||1000)
     },
+    /*
+    * Отсылает код клавиши на сервер
+    * @param код клавиши
+    */
     sendkey:function(key){
-        this.socket.send('{"event":"key","id":"'+Multiplayer.id+'","key":"'+key+'"}');
+        this.socket.send('{"event":"key","id":"'+Multiplayer.id+'","key":'+key+'}');
     },
+    /*
+    * Отслыает строку на сервер
+    */
     chat:function(data){
         this.socket.send('{"chat":"' + data + '","id":"'+Multiplayer.id+'"}');
     },
+    /* Готовит игру к многопользовательскому режиму.
+    * @param object настройки,полученные с сервера
+    */
     start:function(data){
         Multiplayer.id=data.id;
         Graphic.canvas.width=data.frame.w;
@@ -39,6 +50,9 @@ Multiplayer={
         Animations.canvas.width=data.frame.w;
         Animations.canvas.height=data.frame.h;
     },
+    /* Разбирает сообщения с сервера
+    * @param object сообщение с сервера
+    */
     router:function(data){
         switch(data.event){
             case "init":
@@ -69,6 +83,24 @@ Multiplayer={
                         r_hero.phis.vx = Math.round(r_hero.phis.vx / 2);
                         r_hero.phis.vy = Math.round(r_hero.phis.vy / 2);
                         break;
+                    case 69:case "69":
+                        var t=Phisical.create({
+                            name:'bullet',
+                            bulletof:'hero'+data.id,
+                            x:Multiplayer.heros[data.id].phis.x+Multiplayer.heros[data.id].phis.w,
+                            y:Multiplayer.heros[data.id].phis.y,
+                            vx:70,
+                            max_v:70,
+                            w:2,
+                            h:2,
+                            destroyable:true,
+                            destroyer:true,
+                            color:'#ff0000',
+                            dyn:true
+                        });
+
+                        console.log(t);
+                        break;
                 }
                 break;
             case "noob":
@@ -83,10 +115,10 @@ Multiplayer={
                 Multiplayer.socket.send('{"event":"sync_resp","hero":'+JSON.stringify(hero)+',"id":"'+Multiplayer.id+'","to":"'+data.to+'"}');
                 break;
             case "sync":
-                console.log(data.hero.phis);
+//                console.log(Date.now(),data.time,Date.now()-data.time);
                 var model=Phisical.get('hero'+data.id);
                 for(var key in model){
-                    if(key!="name")model[key]=(typeof data.hero.phis[key]=="undefined")?data.hero.phis[key]:model[key];
+                    if(key!="name")model[key]=(typeof data.hero.phis[key]!="undefined")?data.hero.phis[key]:model[key];
                 }
                 break;
             default:

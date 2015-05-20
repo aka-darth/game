@@ -1,4 +1,4 @@
 config={
     start_paused:false,
-    syncinterval:30
+    syncinterval:500
 }

@@ -18,7 +18,9 @@ var client=function(connection){
     switch(data.event){
       case "chat":
       case "key":
+            console.log(data);
       case "sync":
+//          console.log('Broadcast',data.event);
          socket.broadcast(message.utf8Data,_this.id);
         break;
       case "noob":
@@ -39,6 +41,7 @@ var client=function(connection){
     }
 
   });
+  //TODO: Срочно дописать эту функцию. Отключение клиента это важно
   this.connection.on('close', function(connection) {
     console.log('connection closed',_this.id);
     socket.connections.splice(_this.id,1);
