@@ -42,13 +42,13 @@ var client=function(connection){
 
   });
   //TODO: Срочно дописать эту функцию. Отключение клиента это важно
-  this.connection.on('close', function(connection) {
+  this.connection.on('close', function(connection){
     console.log('connection closed',_this.id);
     socket.connections.splice(_this.id,1);
   });
   return this;
 }
-socket={
+var socket={
   init:function(server){
     this.connections=[];
     this.get=function(id){
@@ -75,6 +75,6 @@ socket={
     });
   }
 }
-
+3
 
 module.exports=socket;

@@ -1,5 +1,26 @@
 #!/usr/bin/env node
-var host="192.168.1.26";
+var os = require('os');
+//var host="192.168.1.26";
+//var host="10.4.4.34";
+var host;
+
+var ifaces=os.networkInterfaces();
+Object.keys(ifaces).forEach(function (ifname) {
+  var alias = 0;
+  ifaces[ifname].forEach(function (iface) {
+    if ('IPv4' !== iface.family || iface.internal !== false) {
+      // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
+      return;
+    }
+    if (alias >= 1) {
+      console.log(ifname + ':' + alias, iface.address);
+    }else{
+      console.log(ifname, iface.address);
+      host=iface.address;
+    }
+  });
+});
+
 
 //var io = require('socket.io');
 var http = require('http');
@@ -70,8 +91,6 @@ var port = '80';//normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 
-
-
 var server = http.createServer(app);
 socket.init(server);
 server.listen(port,host);
@@ -87,12 +106,10 @@ function normalizePort(val) {
     // named pipe
     return val;
   }
-
   if (port >= 0) {
     // port number
     return port;
   }
-
   return false;
 }
 function onError(error) {
@@ -103,8 +120,6 @@ function onError(error) {
   var bind = typeof port === 'string'
       ? 'Pipe ' + port
       : 'Port ' + port;
-
-  // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
       console.error(bind + ' requires elevated privileges');

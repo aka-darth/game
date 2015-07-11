@@ -1,16 +1,20 @@
 /* Хорошему коду комментарии не нужны */
+/*
+* TODO: отключение, загрузка карты (а не только ширины и высоты), комнаты у сокетов (на сервере)
+*/
 Multiplayer={
     socket:false,
     id:false,
     heros:[],
     init:function(){
-        //Return
         Graphic.paused=false;
         if(this.socket)return;
-        var socket = new WebSocket('ws://192.168.1.26');
+//        var socket = new WebSocket('ws://192.168.1.26');
+//        var socket = new WebSocket('ws://127.0.0.1');
+        var socket = new WebSocket('ws://10.4.4.34');
         socket.onopen = function(){
             socket.send('{"event":"noob","hero":'+JSON.stringify(hero)+',"stamp":"'+Date.now()+'"}');
-            console.log('{"event":"noob","hero":'+JSON.stringify(hero)+',"stamp":"'+Date.now()+'"}');
+            console.log('Multiplayer ready.');
         };
         socket.onmessage = function (message) {
             try{
@@ -22,10 +26,10 @@ Multiplayer={
             Multiplayer.router(data);
         };
         socket.onerror = function (error) {
-            console.log('WebSocket error: ' + error);
+            console.error('WebSocket error: ' + error);
         };
-        this.socket=socket;
-        st:setInterval(function(){Multiplayer.socket.send('{"event":"sync","hero":'+JSON.stringify(hero)+',"id":"'+Multiplayer.id+'","time":"'+Date.now()+'"}');},config.syncinterval||1000)
+        Multiplayer.socket=socket;
+        st:setInterval(function(){Multiplayer.socket.send('{"event":"sync","hero":'+JSON.stringify(hero)+',"id":"'+Multiplayer.id+'","time":"'+Date.now()+'"}');},config.syncinterval||1000);
     },
     /*
     * Отсылает код клавиши на сервер

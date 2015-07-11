@@ -137,6 +137,7 @@ function need_repair(){
 
 //Точка входа
 window.onload=function(){
+    //Modules..
     Uni={
         load:function(data){
             if(data){
@@ -312,7 +313,6 @@ window.onload=function(){
             }
         }
     },
-
     //Мой герой всегда со мной
     hero={
         name:'hero',
@@ -447,6 +447,11 @@ window.onload=function(){
             }
         }
     }
+
+    //Events..
+    document.querySelector('#multiplayer').onclick=Multiplayer.init;
+
+
     //Ready Go
     Graphic.init();
 }

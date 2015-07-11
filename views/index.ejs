@@ -14,35 +14,8 @@ TODO: Вынести CSS в отдельный файл
   <script src="lib/phisical.js"></script>
   <script src="lib/multiplayer.js"></script>
   <script src="js.js"></script>
-  <title>L</title>
-  <style>
-    input[type=number]{
-      width:50px;
-    }
-    input[type=text]{
-      width:50px;
-    }
-    #create_block{
-      width:170px;
-      float:left;
-      border:1px solid black;
-    }
-    canvas{
-      background:transparent;
-      outline:1px solid #000;
-      border:2px solid rgba(0,0,0,0.4);
-    }
-    #canvas,#background,#animations,#no-phis{
-      position:absolute;
-    }
-    #hero{
-    }
-    #phisblock{
-      width:170px;
-      float:right;
-      border:1px solid black;
-    }
-  </style>
+  <title>Game</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 <div id="create_block">
@@ -56,7 +29,6 @@ TODO: Вынести CSS в отдельный файл
 			<button onclick="hero.phis=Interface.looking_el?Interface.looking_el:hero.phis;hero.phis.dyn=true;hero.phis.max_v=hero.phis.max_v>0?hero.phis.max_v:20;">Управлять</button>
 		</span>
   <button id="look_but" onclick="Interface.create();">Generate</button>
-  <button id="socket" onclick="Multiplayer.init()">Socket</button>
 
   <p style="display:none;">Size:<input type="number" value="50" min="1" id="Brushadow2_size" onchange="Brushadow2.size=this.value;"/>
     <input type="color" id="Brushadow2_color" value="#ff9900" onchange="Brushadow2.color=this.value;"/>
@@ -105,6 +77,7 @@ TODO: Вынести CSS в отдельный файл
   Скорость: <input type="number" onchange="hero.phis.max_v=this.value;" value="120" /><br/>
   Мощность: <input type="number" onchange="hero.a=parseInt(this.value);" value="7" /><br/>
   <button onclick="hero.reset();">Верни героя!</button><br/>
+  <button id="multiplayer">Multiplayer</button><br/>
   <hr class="clearfix"/>
   Мне скучно:<input type="checkbox" onclick="ship_attack();" /><br/>
   Погоня:<input type="checkbox" onclick="AI.brrrr=this.checked;document.getElementById('afraid').disabled=!this.checked;" /><br/>
